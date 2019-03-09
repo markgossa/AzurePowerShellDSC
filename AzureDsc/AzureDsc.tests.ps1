@@ -2,7 +2,7 @@ Import-Module ".\AzureDsc\AzureDsc.psm1" -Force
 $VerbosePreference = "Continue"
 
 Describe "New-AzDscInfrastructure" {
-    Context "Test-AzDscRmResourceGroup" {
+    Context "Test-AzDscResourceGroup" {
         It "Return true if resource group exists in correct location" {
             Mock -CommandName Get-AzResourceGroup -MockWith {
                 [Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.PSResourceGroup]@{
@@ -11,12 +11,12 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be $true
+            Test-AzDscResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be $true
         } 
 
         It "Return false if resource group doesn't exist" {
             Mock -CommandName Get-AzResourceGroup -MockWith {}
-            Test-AzDscRmResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be $false
+            Test-AzDscResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be $false
         }
 
         It "Return false if resource group exists in incorrect location" {
@@ -27,11 +27,11 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be False
+            Test-AzDscResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be False
         }
     }
 
-    Context "Set-AzDscRmResourceGroup" {
+    Context "Set-AzDscResourceGroup" {
         It "Create resource group and return resource group output if does not exist" {
             Mock -CommandName Get-AzResourceGroup -MockWith {}
             Mock -CommandName New-AzResourceGroup -MockWith {
@@ -41,7 +41,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            (Set-AzDscRmResourceGroup -Name "RG-TEST" -Location "WestEurope").GetType().Name | Should be PSResourceGroup
+            (Set-AzDscResourceGroup -Name "RG-TEST" -Location "WestEurope").GetType().Name | Should be PSResourceGroup
             Assert-MockCalled -CommandName New-AzResourceGroup -Times 1 -Exactly -Scope It
         }
 
@@ -53,13 +53,13 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be $null
+            Set-AzDscResourceGroup -Name "RG-TEST" -Location "WestEurope" | Should be $null
             Assert-MockCalled -CommandName New-AzResourceGroup -Times 0 -Exactly -Scope It
             Assert-MockCalled -CommandName Get-AzResourceGroup -Times 1 -Exactly -Scope It
         }
     }
 
-    Context "Test-AzDscRmVirtualNetwork" {
+    Context "Test-AzDscVirtualNetwork" {
         It "Returns true if Virtual Network exists in correct Resource Group and location with the correct DNS servers and Address Prefix" {
             Mock -CommandName Get-AzVirtualNetwork -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSVirtualNetwork]@{
@@ -75,7 +75,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8" `
+            Test-AzDscVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.11" | Should be $true
         }
 
@@ -94,7 +94,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8" `
+            Test-AzDscVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.11" | Should be $false
         }
 
@@ -113,7 +113,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8","172.31.0.0/16" `
+            Test-AzDscVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8","172.31.0.0/16" `
             -DnsServers "10.0.0.10","10.0.0.11" | Should be $false
         }
 
@@ -132,7 +132,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST"  -AddressPrefixes "10.0.0.0/8" `
+            Test-AzDscVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST"  -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10" | Should be $false
         }
 
@@ -151,7 +151,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST"  -AddressPrefixes "10.0.0.0/8" `
+            Test-AzDscVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST"  -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.12" | Should be $false
         }
 
@@ -170,12 +170,12 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8" `
+            Test-AzDscVirtualNetwork -Name "VNET-TEST" -Location "WestEurope" -ResourceGroupName "RG-TEST" -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.11" | Should be $false
         }
     }
 
-    Context "Set-AzDscRmVirtualNetwork" {
+    Context "Set-AzDscVirtualNetwork" {
         It "Create new virtual network and return virtual network object if it doesn't exist" {
             Mock -CommandName Get-AzVirtualNetwork -MockWith {}
             Mock -CommandName New-AzVirtualNetwork -MockWith {
@@ -192,7 +192,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            (Set-AzDscRmVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
+            (Set-AzDscVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.11").GetType().Name | Should be PSVirtualNetwork
             Assert-MockCalled -CommandName New-AzVirtualNetwork -Times 1 -Exactly -Scope It
             Assert-MockCalled -CommandName Get-AzVirtualNetwork -Times 2 -Exactly -Scope It
@@ -214,7 +214,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
+            Set-AzDscVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.11" -UpdateExistingVirtualNetwork $false | Should be $null
             Assert-MockCalled -CommandName New-AzVirtualNetwork -Times 0 -Exactly -Scope It
             Assert-MockCalled -CommandName Get-AzVirtualNetwork -Times 2 -Exactly -Scope It
@@ -236,7 +236,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
+            Set-AzDscVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.11" -UpdateExistingVirtualNetwork $false | Should be $null
             Assert-MockCalled -CommandName New-AzVirtualNetwork -Times 0 -Exactly -Scope It
             Assert-MockCalled -CommandName Get-AzVirtualNetwork -Times 2 -Exactly -Scope It
@@ -270,14 +270,14 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            (Set-AzDscRmVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
+            (Set-AzDscVirtualNetwork -Name "VNET-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" -AddressPrefixes "10.0.0.0/8" `
             -DnsServers "10.0.0.10","10.0.0.11" -UpdateExistingVirtualNetwork $true).GetType().Name | Should be PSVirtualNetwork
             Assert-MockCalled -CommandName New-AzVirtualNetwork -Times 1 -Exactly -Scope It
             Assert-MockCalled -CommandName Get-AzVirtualNetwork -Times 2 -Exactly -Scope It
         }
     }
 
-    Context "Test-AzDscRmVirtualNetworkPeering" {
+    Context "Test-AzDscVirtualNetworkPeering" {
         It "Return true if local and remote peering exist and both have a PeeringState of Connected" {
             Mock -CommandName Get-AzVirtualNetwork -ParameterFilter {$Name -eq "VNET-TEST"} -MockWith {
                 @{
@@ -315,7 +315,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Test-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworkName "VNET-REMOTE-TEST" -RemoteVirtualNetworkResourceGroupName "RG-REMOTE-TEST" | Should be $true
         }
 
@@ -356,7 +356,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Test-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworkName "VNET-REMOTE-TEST" -RemoteVirtualNetworkResourceGroupName "RG-REMOTE-TEST" | Should be $false
         }
 
@@ -397,7 +397,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Test-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworkName "VNET-REMOTE-TEST" -RemoteVirtualNetworkResourceGroupName "RG-REMOTE-TEST" | Should be $false
         }
 
@@ -439,7 +439,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Test-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworkName "VNET-REMOTE-TEST" -RemoteVirtualNetworkResourceGroupName "RG-REMOTE-TEST" | Should be $false
         }
 
@@ -480,12 +480,12 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Test-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworkName "VNET-REMOTE-TEST" -RemoteVirtualNetworkResourceGroupName "RG-REMOTE-TEST" | Should be $false
         }
     }
 
-    Context "Set-AzDscRmVirtualNetworkPeering" {
+    Context "Set-AzDscVirtualNetworkPeering" {
         It "Do nothing if virtual network local and remote peering exists" {
             Mock -CommandName Get-AzVirtualNetwork -ParameterFilter {$Name -eq "VNET-TEST"} -MockWith {
                 @{
@@ -563,7 +563,7 @@ Describe "New-AzDscInfrastructure" {
 
             Mock -CommandName Add-AzVirtualNetworkPeering -MockWith {}
 
-            Set-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworks $RemoteVirtualNetworks -CreateVirtualNetworkPeering $true | Should be $null
             Assert-MockCalled -CommandName Get-AzVirtualNetworkPeering -ParameterFilter {$VirtualNetworkName -eq "VNET-TEST"} `
             -Times 2 -Exactly -Scope It
@@ -632,7 +632,7 @@ Describe "New-AzDscInfrastructure" {
 
             Mock -CommandName Add-AzVirtualNetworkPeering -MockWith {}
 
-            Set-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworks $RemoteVirtualNetworks -CreateVirtualNetworkPeering $false | Should be $null
             Assert-MockCalled -CommandName Get-AzVirtualNetworkPeering -ParameterFilter {$VirtualNetworkName -eq "VNET-TEST"} `
             -Times 2 -Exactly -Scope It
@@ -710,7 +710,7 @@ Describe "New-AzDscInfrastructure" {
 
             Mock -CommandName Add-AzVirtualNetworkPeering -MockWith {}
 
-            Set-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworks $RemoteVirtualNetworks -CreateVirtualNetworkPeering $false | Should be $null
             Assert-MockCalled -CommandName Get-AzVirtualNetworkPeering -ParameterFilter {$VirtualNetworkName -eq "VNET-TEST"} `
             -Times 2 -Exactly -Scope It
@@ -780,7 +780,7 @@ Describe "New-AzDscInfrastructure" {
             Mock -CommandName Add-AzVirtualNetworkPeering -MockWith {}
             Mock -CommandName Remove-AzVirtualNetworkPeering -MockWith {}
         
-            Set-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworks $RemoteVirtualNetworks -CreateVirtualNetworkPeering $true | Should be $null
             Assert-MockCalled -CommandName Get-AzVirtualNetworkPeering -ParameterFilter {$VirtualNetworkName -eq "VNET-TEST"} `
             -Times 4 -Exactly -Scope It
@@ -864,7 +864,7 @@ Describe "New-AzDscInfrastructure" {
             Mock -CommandName Add-AzVirtualNetworkPeering -MockWith {}
             Mock -CommandName Remove-AzVirtualNetworkPeering -MockWith {}
         
-            Set-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscVirtualNetworkPeering -LocalVirtualNetworkName "VNET-TEST" -LocalVirtualNetworkResourceGroupName "RG-TEST" `
             -RemoteVirtualNetworks $RemoteVirtualNetworks -CreateVirtualNetworkPeering $true | Should be $null
             Assert-MockCalled -CommandName Get-AzVirtualNetworkPeering -ParameterFilter {$VirtualNetworkName -eq "VNET-TEST"} `
             -Times 3 -Exactly -Scope It
@@ -878,7 +878,7 @@ Describe "New-AzDscInfrastructure" {
         }
     }
 
-    Context "Test-AzDscRmSubnet" {
+    Context "Test-AzDscSubnet" {
         It "Return true if subnet exists in correct virtual network with correct address prefix, route table and network security group" {
             Mock -CommandName Get-AzVirtualNetwork -ParameterFilter {$Name -eq "VNET-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSVirtualNetwork]@{
@@ -901,7 +901,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Test-AzDscRmSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
+            Test-AzDscSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $true
@@ -917,7 +917,7 @@ Describe "New-AzDscInfrastructure" {
             
             Mock -CommandName Get-AzVirtualNetworkSubnetConfig -MockWith {}
             
-            Test-AzDscRmSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
+            Test-AzDscSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $false
@@ -945,7 +945,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Test-AzDscRmSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
+            Test-AzDscSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $false
@@ -973,7 +973,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Test-AzDscRmSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
+            Test-AzDscSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $false
@@ -1001,14 +1001,14 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Test-AzDscRmSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
+            Test-AzDscSubnet -Name "SUBNET-TEST" -AddressPrefix "10.0.0.0/24" -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST"`
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $false
         }
     }
 
-    Context "Set-AzDscRmSubnet" {
+    Context "Set-AzDscSubnet" {
         It "Return null if subnet exists in correct virtual network with correct settings" {
             Mock -CommandName Get-AzVirtualNetwork -ParameterFilter {$Name -eq "VNET-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSVirtualNetwork]@{
@@ -1059,7 +1059,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Set-AzDscRmSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $null
@@ -1105,7 +1105,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Set-AzDscRmSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $null
@@ -1164,7 +1164,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Set-AzDscRmSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $null
@@ -1224,7 +1224,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
             
-            Set-AzDscRmSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
+            Set-AzDscSubnet -Subnets $subnets -VirtualNetworkName "VNET-TEST" -VirtualNetworkResourceGroupName "RG-TEST" `
             -RouteTableId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/routeTables/RT-TEST" `
             -NetworkSecurityGroupId "/subscriptions/12345678-9012-3456-789012345678/resourceGroups/RG-TEST/providers/Microsoft.Network/networkSecurityGroups/NSG-TEST" `
             | Should be $null
@@ -1234,7 +1234,7 @@ Describe "New-AzDscInfrastructure" {
         }
     }
 
-    Context "Test-AzDscRmRouteTable" {
+    Context "Test-AzDscRouteTable" {
         It "Return true if route table exists in the correct resource group" {
             Mock -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSRouteTable]@{
@@ -1243,7 +1243,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" | Should be $true
+            Test-AzDscRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" | Should be $true
             Assert-MockCalled -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
         }
@@ -1251,13 +1251,13 @@ Describe "New-AzDscInfrastructure" {
         It "Return false if route table does not exist in the correct resource group" {
             Mock -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {}
 
-            Test-AzDscRmRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" | Should be $false
+            Test-AzDscRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" | Should be $false
             Assert-MockCalled -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
         }
     }
 
-    Context "Set-AzDscRmRouteTable" {
+    Context "Set-AzDscRouteTable" {
         It "Do nothing if route table exists in Resource Group" {
             Mock -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSRouteTable]@{
@@ -1268,7 +1268,7 @@ Describe "New-AzDscInfrastructure" {
 
             Mock -CommandName New-AzRouteTable -MockWith {}
 
-            Set-AzDscRmRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" | Should be $null
+            Set-AzDscRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" | Should be $null
             Assert-MockCalled -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
             Assert-MockCalled -CommandName New-AzRouteTable -Exactly -Times 0 -Scope It
@@ -1283,7 +1283,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            (Set-AzDscRmRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope").Name | Should be "RT-TEST"
+            (Set-AzDscRouteTable -Name "RT-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope").Name | Should be "RT-TEST"
             Assert-MockCalled -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
             Assert-MockCalled -CommandName New-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
@@ -1291,7 +1291,7 @@ Describe "New-AzDscInfrastructure" {
         }
     }
     
-    Context "Test-AzDscRmNetworkSecurityGroup" {
+    Context "Test-AzDscNetworkSecurityGroup" {
         It "Return true if network security group exists in the correct resource group" {
             Mock -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSNetworkSecurityGroup]@{
@@ -1300,7 +1300,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
     
-            Test-AzDscRmNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" | Should be $true
+            Test-AzDscNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" | Should be $true
             Assert-MockCalled -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
         }
@@ -1308,13 +1308,13 @@ Describe "New-AzDscInfrastructure" {
         It "Return false if network security group does not exist in the correct resource group" {
             Mock -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {}
     
-            Test-AzDscRmNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" | Should be $false
+            Test-AzDscNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" | Should be $false
             Assert-MockCalled -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
         }
     }
     
-    Context "Set-AzDscRmNetworkSecurityGroup" {
+    Context "Set-AzDscNetworkSecurityGroup" {
         It "Do nothing if network security group exists in Resource Group" {
             Mock -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSNetworkSecurityGroup]@{
@@ -1325,7 +1325,7 @@ Describe "New-AzDscInfrastructure" {
     
             Mock -CommandName New-AzNetworkSecurityGroup -MockWith {}
     
-            Set-AzDscRmNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" | Should be $null
+            Set-AzDscNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
             Assert-MockCalled -CommandName New-AzNetworkSecurityGroup -Exactly -Times 0 -Scope It
@@ -1340,7 +1340,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
     
-            (Set-AzDscRmNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope").Name | Should be "NSG-TEST"
+            (Set-AzDscNetworkSecurityGroup -Name "NSG-TEST" -ResourceGroupName "RG-TEST" -Location "WestEurope").Name | Should be "NSG-TEST"
             Assert-MockCalled -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
             -Scope It
             Assert-MockCalled -CommandName New-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST" -and $ResourceGroupName -eq "RG-TEST"} -Exactly -Times 1 `
@@ -1348,7 +1348,7 @@ Describe "New-AzDscInfrastructure" {
         }
     }
 
-    Context "Test-AzDscRmRouteConfig" {
+    Context "Test-AzDscRouteConfig" {
         It "Return true if routes match hashtable input" {
             Mock -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSRouteTable]@{
@@ -1366,7 +1366,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
+            Test-AzDscRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
             "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $true
         }
 
@@ -1380,7 +1380,7 @@ Describe "New-AzDscInfrastructure" {
             
             Mock -CommandName Get-AzRouteConfig -ParameterFilter {$Name -eq "Internet"} -MockWith {}
 
-            Test-AzDscRmRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
+            Test-AzDscRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
             "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $false
         }
 
@@ -1401,7 +1401,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
+            Test-AzDscRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
             "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $false
         }
 
@@ -1422,7 +1422,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
+            Test-AzDscRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
             "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $false
         }
 
@@ -1443,12 +1443,12 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
+            Test-AzDscRouteConfig -Name "Internet" -NextHopType "VirtualAppliance" -AddressPrefix "0.0.0.0/0" -NextHopIpAddress "10.128.31.36" -RouteTableName `
             "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $false
         }
     }
 
-    Context "Set-AzDscRmRouteConfig" {
+    Context "Set-AzDscRouteConfig" {
         It "Do nothing if route exists with correct NextHopType, NextHopIpAddress and AddressPrefix" {
             Mock -CommandName Get-AzRouteTable -ParameterFilter {$Name -eq "RT-TEST" -and $ResourceGroupName -eq "RG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSRouteTable]@{
@@ -1509,7 +1509,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
+            Set-AzDscRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Add-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Set-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Remove-AzRouteConfig -Exactly -Times 0 -Scope It
@@ -1568,7 +1568,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
+            Set-AzDscRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Add-AzRouteConfig -ParameterFilter {$Name -eq "HeadOffice"} -Exactly -Times 1 -Scope It
             Assert-MockCalled -CommandName Set-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Remove-AzRouteConfig -Exactly -Times 0 -Scope It
@@ -1620,7 +1620,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
+            Set-AzDscRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Add-AzRouteConfig -ParameterFilter {$Name -eq "HeadOffice"} -Exactly -Times 1 -Scope It
             Assert-MockCalled -CommandName Add-AzRouteConfig -ParameterFilter {$Name -eq "Internet"} -Exactly -Times 1 -Scope It
             Assert-MockCalled -CommandName Set-AzRouteConfig -Exactly -Times 0 -Scope It
@@ -1687,7 +1687,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
+            Set-AzDscRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Add-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Set-AzRouteConfig -ParameterFilter {$Name -eq "HeadOffice"} -Exactly -Times 1 -Scope It
             Assert-MockCalled -CommandName Remove-AzRouteConfig -Exactly -Times 0 -Scope It
@@ -1753,7 +1753,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
+            Set-AzDscRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Add-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Set-AzRouteConfig -ParameterFilter {$Name -eq "HeadOffice"} -Exactly -Times 1 -Scope It
             Assert-MockCalled -CommandName Remove-AzRouteConfig -Exactly -Times 0 -Scope It
@@ -1819,7 +1819,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
+            Set-AzDscRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Add-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Set-AzRouteConfig -ParameterFilter {$Name -eq "HeadOffice"} -Exactly -Times 1 -Scope It
             Assert-MockCalled -CommandName Remove-AzRouteConfig -Exactly -Times 0 -Scope It
@@ -1897,14 +1897,14 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
+            Set-AzDscRouteConfig -Routes $routes -RouteTableName "RT-TEST" -RouteTableResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Add-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Set-AzRouteConfig -Exactly -Times 0 -Scope It
             Assert-MockCalled -CommandName Remove-AzRouteConfig -Exactly -Times 2 -Scope It
         }
     }
 
-    Context "Test-AzDscRmNetworkSecurityRuleConfig" {
+    Context "Test-AzDscNetworkSecurityRuleConfig" {
         It "Return true if network security group rule settings correct" {
             Mock -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSNetworkSecurityGroup]@{
@@ -1927,7 +1927,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $true
@@ -1943,7 +1943,7 @@ Describe "New-AzDscInfrastructure" {
 
             Mock -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -MockWith {}
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -1971,7 +1971,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -1999,7 +1999,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -2027,7 +2027,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -2055,7 +2055,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -2083,7 +2083,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -2111,7 +2111,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -2139,7 +2139,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
@@ -2167,14 +2167,14 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Test-AzDscRmNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
+            Test-AzDscNetworkSecurityRuleConfig -Name "ADTCPOutbound" -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" -Protocol "TCP" -SourcePortRange "*" -DestinationPortRange "389,3268,88,464" `
             -SourceAddressPrefix "*" -DestinationAddressPrefix "10.128.120.48/29" -Access "Allow" -Priority "100" -Direction Outbound | `
             Should be $false
         }
     }
 
-    Context "Set-AzDscRmNetworkSecurityRuleConfig" {
+    Context "Set-AzDscNetworkSecurityRuleConfig" {
         It "Do nothing if network security group rule exists with correct Protocol, SourcePortRange, DestinationPortRange etc" {
             Mock -CommandName Get-AzNetworkSecurityGroup -ParameterFilter {$Name -eq "NSG-TEST"} -MockWith {
                 [Microsoft.Azure.Commands.Network.Models.PSNetworkSecurityGroup]@{
@@ -2300,7 +2300,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -2424,7 +2424,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -2562,7 +2562,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -2700,7 +2700,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -2838,7 +2838,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -2976,7 +2976,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -3114,7 +3114,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -3252,7 +3252,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -3390,7 +3390,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -3528,7 +3528,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It
@@ -3690,7 +3690,7 @@ Describe "New-AzDscInfrastructure" {
                 }
             }
 
-            Set-AzDscRmNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
+            Set-AzDscNetworkSecurityRuleConfig -NetworkSecurityGroupRules $nsgRules -NetworkSecurityGroupName "NSG-TEST" `
             -NetworkSecurityGroupResourceGroupName "RG-TEST" | Should be $null
             Assert-MockCalled -CommandName Get-AzNetworkSecurityRuleConfig -ParameterFilter {$Name -eq "ADTCPOutbound"} -Times 1 `
             -Exactly -Scope It

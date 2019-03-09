@@ -2,6 +2,7 @@ $configuration = @{
     ProjectName = "TEST-VM"
     Location = "WestEurope"
     VirtualNetworkAddressPrefixes = "10.128.64.8/29"
+    VirtualNetworkDnsServers = ("10.0.0.10","10.0.0.11")
     UpdateExistingVirtualNetwork = $true
     Subnets = @{
         Name            = "SNET-TEST-VM"

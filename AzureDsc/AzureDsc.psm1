@@ -1,4 +1,4 @@
-function Test-AzDscRmResourceGroup
+function Test-AzDscResourceGroup
 {
     [cmdletbinding()]
     param 
@@ -44,7 +44,7 @@ function Test-AzDscRmResourceGroup
     }
 }
 
-function Set-AzDscRmResourceGroup
+function Set-AzDscResourceGroup
 {
     [cmdletbinding()]
     param 
@@ -60,14 +60,14 @@ function Set-AzDscRmResourceGroup
         $IgnoreLocation = $false
     )
 
-    if ((Test-AzDscRmResourceGroup -Name $Name -Location $Location -IgnoreLocation $IgnoreLocation) -eq $false)
+    if ((Test-AzDscResourceGroup -Name $Name -Location $Location -IgnoreLocation $IgnoreLocation) -eq $false)
     {
         Write-Verbose "Creating resource group $Name in location $Location"
         New-AzResourceGroup -Name $Name -Location $Location -Force
     }
 }
 
-function Test-AzDscRmVirtualNetwork
+function Test-AzDscVirtualNetwork
 {
     [cmdletbinding()]
     param 
@@ -112,7 +112,7 @@ function Test-AzDscRmVirtualNetwork
     }
 }
 
-function Set-AzDscRmVirtualNetwork
+function Set-AzDscVirtualNetwork
 {
     [cmdletbinding()]
     param 
@@ -139,7 +139,7 @@ function Set-AzDscRmVirtualNetwork
 
     $existingVirtualNetwork = Get-AzVirtualNetwork -Name $Name -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 
-    if ((Test-AzDscRmVirtualNetwork -Name $Name -Location $Location -ResourceGroupName $ResourceGroupName -AddressPrefixes $AddressPrefixes `
+    if ((Test-AzDscVirtualNetwork -Name $Name -Location $Location -ResourceGroupName $ResourceGroupName -AddressPrefixes $AddressPrefixes `
     -DnsServers $DnsServers) -eq $false)
     {
         if (($existingVirtualNetwork) -and $UpdateExistingVirtualNetwork -eq $true)
@@ -159,7 +159,7 @@ function Set-AzDscRmVirtualNetwork
     }
 }
 
-function Test-AzDscRmVirtualNetworkPeering
+function Test-AzDscVirtualNetworkPeering
 {
     [cmdletbinding()]
     param 
@@ -204,7 +204,7 @@ function Test-AzDscRmVirtualNetworkPeering
     }
 }
 
-function Set-AzDscRmVirtualNetworkPeering 
+function Set-AzDscVirtualNetworkPeering 
 {
     [cmdletbinding()]
     param 
@@ -229,7 +229,7 @@ function Set-AzDscRmVirtualNetworkPeering
     foreach ($RemoteVirtualNetwork in $RemoteVirtualNetworks.Keys)
     {
         # Check if peering is not working
-        if ((Test-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName $LocalVirtualNetworkName -LocalVirtualNetworkResourceGroupName `
+        if ((Test-AzDscVirtualNetworkPeering -LocalVirtualNetworkName $LocalVirtualNetworkName -LocalVirtualNetworkResourceGroupName `
         $LocalVirtualNetworkResourceGroupName -RemoteVirtualNetworkName $RemoteVirtualNetworks.$RemoteVirtualNetwork.Name `
         -RemoteVirtualNetworkResourceGroupName $RemoteVirtualNetworks.$RemoteVirtualNetwork.ResourceGroupName) -eq $false -and `
         $CreateVirtualNetworkPeering -eq $true)
@@ -269,7 +269,7 @@ function Set-AzDscRmVirtualNetworkPeering
     }
 }
 
-function Test-AzDscRmSubnet 
+function Test-AzDscSubnet 
 {
     [cmdletbinding()]
     param 
@@ -320,7 +320,7 @@ function Test-AzDscRmSubnet
     }
 }
 
-function Set-AzDscRmSubnet 
+function Set-AzDscSubnet 
 {
     [cmdletbinding()]
     param 
@@ -349,7 +349,7 @@ function Set-AzDscRmSubnet
     -ErrorAction SilentlyContinue
     foreach ($Subnet in $Subnets.Keys)
     {
-        if ((Test-AzDscRmSubnet -Name $Subnets.$Subnet.Name -AddressPrefix $Subnets.$Subnet.AddressPrefix -VirtualNetworkName $VirtualNetworkName `
+        if ((Test-AzDscSubnet -Name $Subnets.$Subnet.Name -AddressPrefix $Subnets.$Subnet.AddressPrefix -VirtualNetworkName $VirtualNetworkName `
         -VirtualNetworkResourceGroupName $VirtualNetworkResourceGroupName -RouteTableId $RouteTableId -NetworkSecurityGroupId $NetworkSecurityGroupId) -eq $false)
         {
             if (Get-AzVirtualNetworkSubnetConfig -Name $Subnets.$Subnet.Name -VirtualNetwork $virtualNetworkObject)
@@ -368,7 +368,7 @@ function Set-AzDscRmSubnet
     }
 }
 
-function Test-AzDscRmRouteTable 
+function Test-AzDscRouteTable 
 {
     [cmdletbinding()]
     param 
@@ -393,7 +393,7 @@ function Test-AzDscRmRouteTable
     }
 }
 
-function Set-AzDscRmRouteTable
+function Set-AzDscRouteTable
 {
     [cmdletbinding()]
     param 
@@ -409,14 +409,14 @@ function Set-AzDscRmRouteTable
         $Location
     )
 
-    if ((Test-AzDscRmRouteTable -Name $Name -ResourceGroupName $ResourceGroupName) -eq $false)
+    if ((Test-AzDscRouteTable -Name $Name -ResourceGroupName $ResourceGroupName) -eq $false)
     {
         Write-Verbose "Creating route table $Name in resource group $ResourceGroupName"
         New-AzRouteTable -Name $Name -ResourceGroupName $ResourceGroupName -Location $Location
     }
 }
 
-function Test-AzDscRmNetworkSecurityGroup 
+function Test-AzDscNetworkSecurityGroup 
 {
     [cmdletbinding()]
     param 
@@ -441,7 +441,7 @@ function Test-AzDscRmNetworkSecurityGroup
     }
 }
 
-function Set-AzDscRmNetworkSecurityGroup
+function Set-AzDscNetworkSecurityGroup
 {
     [cmdletbinding()]
     param 
@@ -457,14 +457,14 @@ function Set-AzDscRmNetworkSecurityGroup
         $Location
     )
 
-    if ((Test-AzDscRmNetworkSecurityGroup -Name $Name -ResourceGroupName $ResourceGroupName) -eq $false)
+    if ((Test-AzDscNetworkSecurityGroup -Name $Name -ResourceGroupName $ResourceGroupName) -eq $false)
     {
         Write-Verbose "Creating Network security group $Name in resource group $ResourceGroupName"
         New-AzNetworkSecurityGroup -Name $Name -ResourceGroupName $ResourceGroupName -Location $Location
     }
 }
 
-function Test-AzDscRmRouteConfig {
+function Test-AzDscRouteConfig {
     [cmdletbinding()]
     param 
     (
@@ -503,7 +503,7 @@ function Test-AzDscRmRouteConfig {
     }
 }
 
-function Set-AzDscRmRouteConfig 
+function Set-AzDscRouteConfig 
 {
     [cmdletbinding()]
     param 
@@ -524,7 +524,7 @@ function Set-AzDscRmRouteConfig
     # Check that all routes exist and create/update as needed
     foreach ($Route in $Routes.Keys)    
     {
-        if ((Test-AzDscRmRouteConfig -Name $Routes.$Route.Name -AddressPrefix $Routes.$Route.AddressPrefix -NextHopType $Routes.$Route.NextHopType `
+        if ((Test-AzDscRouteConfig -Name $Routes.$Route.Name -AddressPrefix $Routes.$Route.AddressPrefix -NextHopType $Routes.$Route.NextHopType `
         -NextHopIpAddress $Routes.$Route.NextHopIpAddress -RouteTableName $RouteTableName -RouteTableResourceGroupName $RouteTableResourceGroupName) `
         -eq $false)
         {
@@ -566,7 +566,7 @@ function Set-AzDscRmRouteConfig
     }
 }
 
-function Test-AzDscRmNetworkSecurityRuleConfig
+function Test-AzDscNetworkSecurityRuleConfig
 {
     [cmdletbinding()]
     param 
@@ -624,7 +624,7 @@ function Test-AzDscRmNetworkSecurityRuleConfig
     }
 }
 
-function Set-AzDscRmNetworkSecurityRuleConfig 
+function Set-AzDscNetworkSecurityRuleConfig 
 {
     [cmdletbinding()]
     param 
@@ -645,7 +645,7 @@ function Set-AzDscRmNetworkSecurityRuleConfig
     # Check that all routes exist and create/update as needed
     foreach ($NetworkSecurityGroupRule in $NetworkSecurityGroupRules.Keys)
     {
-        if ((Test-AzDscRmNetworkSecurityRuleConfig -Name $NetworkSecurityGroupRules.$NetworkSecurityGroupRule.Name -NetworkSecurityGroupName `
+        if ((Test-AzDscNetworkSecurityRuleConfig -Name $NetworkSecurityGroupRules.$NetworkSecurityGroupRule.Name -NetworkSecurityGroupName `
         $NetworkSecurityGroupName -NetworkSecurityGroupResourceGroupName $NetworkSecurityGroupResourceGroupName -Protocol `
         $NetworkSecurityGroupRules.$NetworkSecurityGroupRule.Protocol -SourcePortRange $NetworkSecurityGroupRules.$NetworkSecurityGroupRule.SourcePortRange `
         -SourceAddressPrefix $NetworkSecurityGroupRules.$NetworkSecurityGroupRule.SourceAddressPrefix -DestinationPortRange `
@@ -736,7 +736,7 @@ function Start-AzDscIaaSDeployment
         $VirtualNetworkAddressPrefixes,
         [parameter()]
         [array]
-        $VirtualNetworkDnsServers = ("10.128.120.53","10.128.120.54"),
+        $VirtualNetworkDnsServers = ("10.0.0.10","10.0.0.11"),
         [parameter()]
         [boolean]
         $UpdateExistingVirtualNetwork = $false,
@@ -771,30 +771,30 @@ function Start-AzDscIaaSDeployment
     if (!$NetworkSecurityGroupName) {$NetworkSecurityGroupName = "NSG-$ProjectName"}
 
     # Create resource group
-    Set-AzDscRmResourceGroup -Name $resourceGroupName -Location $Location
+    Set-AzDscResourceGroup -Name $resourceGroupName -Location $Location
 
     # Create virtual network
-    Set-AzDscRmVirtualNetwork -Name $VirtualNetworkName -ResourceGroupName $VirtualNetworkResourceGroupName `
+    Set-AzDscVirtualNetwork -Name $VirtualNetworkName -ResourceGroupName $VirtualNetworkResourceGroupName `
     -Location $Location -AddressPrefixes $VirtualNetworkAddressPrefixes -DnsServers $VirtualNetworkDnsServers `
     -UpdateExistingVirtualNetwork $UpdateExistingVirtualNetwork
 
     # Create virtual network peerings if RemoteVirtualNetworks specified
     if ($RemoteVirtualNetworks)
     {
-        Set-AzDscRmVirtualNetworkPeering -LocalVirtualNetworkName $VirtualNetworkName -LocalVirtualNetworkResourceGroupName $resourceGroupName `
+        Set-AzDscVirtualNetworkPeering -LocalVirtualNetworkName $VirtualNetworkName -LocalVirtualNetworkResourceGroupName $resourceGroupName `
         -RemoteVirtualNetworks $RemoteVirtualNetworks
     }
 
     # Create route table
-    Set-AzDscRmRouteTable -Name $RouteTableName -ResourceGroupName $resourceGroupName -Location $Location
+    Set-AzDscRouteTable -Name $RouteTableName -ResourceGroupName $resourceGroupName -Location $Location
 
     # Create network security group
-    Set-AzDscRmNetworkSecurityGroup -Name $NetworkSecurityGroupName -ResourceGroupName $ResourceGroupName -Location $Location
+    Set-AzDscNetworkSecurityGroup -Name $NetworkSecurityGroupName -ResourceGroupName $ResourceGroupName -Location $Location
 
     # Create routes
-    Set-AzDscRmRouteConfig -Routes $Routes -RouteTableName $RouteTableName -RouteTableResourceGroupName $ResourceGroupName
+    Set-AzDscRouteConfig -Routes $Routes -RouteTableName $RouteTableName -RouteTableResourceGroupName $ResourceGroupName
 
     # Create subnet
-    #Set-AzDscRmSubnet -Subnets $Subnets -RouteTableId (Get-AzRouteTable -Name $RouteTableName -ResourceGroupName $resourceGroupName).Id `
+    #Set-AzDscSubnet -Subnets $Subnets -RouteTableId (Get-AzRouteTable -Name $RouteTableName -ResourceGroupName $resourceGroupName).Id `
     #-VirtualNetworkName $VirtualNetworkName -VirtualNetworkResourceGroupName $VirtualNetworkResourceGroupName
 }
