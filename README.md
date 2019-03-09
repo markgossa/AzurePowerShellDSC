@@ -1,2 +1,4 @@
 # AzurePowerShellDSC
-An idempotent PowerShell module for Azure infrastructure as code
+An idempotent PowerShell module for Azure infrastructure as code. 
+
+See other branches.
